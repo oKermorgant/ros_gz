@@ -63,6 +63,22 @@ if(BUILD_TESTING)
       gz-transport::core
     )
     add_dependencies(test_image_bridge_teardown ${executable})
+
+    ament_add_gtest(test_image_bridge_config
+      test/test_image_bridge_config.cpp
+      TIMEOUT 120
+    )
+    target_compile_definitions(test_image_bridge_config PRIVATE
+      IMAGE_BRIDGE_EXECUTABLE="$<TARGET_FILE:${executable}>"
+      IMAGE_BRIDGE_CONFIG_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test/config/test_image_bridge.yaml"
+    )
+    target_link_libraries(test_image_bridge_config
+      ${sensor_msgs_TARGETS}
+      rclcpp::rclcpp
+      gz-msgs::core
+      gz-transport::core
+    )
+    add_dependencies(test_image_bridge_config ${executable})
   endif()
 
   # find_package(rostest REQUIRED)

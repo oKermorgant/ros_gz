@@ -1,0 +1,14 @@
+# ros_gz_bridge style configuration for image_bridge.
+
+# Rename the ROS topic relative to the Gazebo topic.
+- ros_topic_name: "config_test_cam/image"
+  gz_topic_name: "/config_test_cam/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+  frame_id: "config_test_cam_optical_frame"
+
+# topic_name shorthand: same name on both sides.
+- topic_name: "/config_test_cam_min/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
