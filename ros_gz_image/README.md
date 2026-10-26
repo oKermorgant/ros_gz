@@ -15,32 +15,38 @@ To run the bridge from the command line:
 ros2 run ros_gz_image image_bridge /topic1 /topic2
 ```
 
-Topics can also be configured with a YAML file using the same format as
-[ros_gz_bridge](https://github.com/gazebosim/ros_gz/blob/ros2/ros_gz_bridge/README.md#configuration-yaml-file).
-This allows renaming the ROS topic relative to the Gazebo topic and setting a
-per-bridge QoS profile, lazy flag, or `frame_id`:
+Topics can also be configured with a YAML file. Entries use the same field
+names as [ros_gz_bridge](https://github.com/gazebosim/ros_gz/blob/ros2/ros_gz_bridge/README.md#configuration-yaml-file)
+configuration files, but the message types are optional: every entry bridges
+`gz.msgs.Image` messages to `sensor_msgs/msg/Image`, so only topic names are
+required. Entries may rename the ROS topic relative to the Gazebo topic,
+override the frame ID, and bridge the camera `camera_info` topic alongside the
+image topic:
 
 ```yaml
 - ros_topic_name: "navigation_camera/image"
   gz_topic_name: "/world/map/model/iris/link/navigation_camera_link/sensor/navigation_camera/image"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
-  direction: GZ_TO_ROS
   frame_id: "navigation_camera_link"
+  camera_info:
+    # Optional; both default to the image topic names + "/camera_info"
+    gz_topic_name: "/world/map/model/iris/link/navigation_camera_link/sensor/navigation_camera/camera_info"
+    ros_topic_name: "navigation_camera/camera_info"
+
+# topic_name applies to both sides
+- topic_name: "/camera/front/image_raw"
 ```
 
 ```shell
 ros2 run ros_gz_image image_bridge --ros-args -p config_file:=<path/to/config.yaml>
 ```
 
-Only image topics are supported: `ros_type_name` must be `sensor_msgs/msg/Image`
-and `gz_type_name` must be `gz.msgs.Image`. Because the bridge is unidirectional,
-`direction` must be `GZ_TO_ROS` (or omitted, in which case only the Gazebo to
-ROS direction is bridged). Entries for other types, services, or `ROS_TO_GZ`
-bridges are skipped with an error message.
+Because the bridge is unidirectional from Gazebo to ROS, no direction needs to
+be set. Entries that set a message type other than `sensor_msgs/msg/Image`
+and `gz.msgs.Image` are skipped with an error message.
 
-A `frame_id` entry overrides the frame ID of the ROS image header; without it,
-the frame ID received in the Gazebo message is kept.
+A `frame_id` entry overrides the frame ID of the ROS headers of the image and
+its `camera_info`; without it, the frame ID received in the Gazebo messages is
+kept.
 
 Topics passed as arguments and entries from a config file can be combined.
 
@@ -48,7 +54,7 @@ Topics passed as arguments and entries from a config file can be combined.
 
 ### `config_file` (string, default: `""`)
 
-Path to a YAML file with `ros_gz_bridge` style bridge entries, as shown above.
+Path to a YAML file with image bridge entries, as shown above.
 
 ### `qos` (string, default: `"default"`)
 

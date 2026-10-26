@@ -1,14 +1,19 @@
-# ros_gz_bridge style configuration for image_bridge.
+# image_bridge configuration.
 
-# Rename the ROS topic relative to the Gazebo topic.
+# Explicit ROS and Gazebo topic names, optical frame override, and a
+# camera_info bridge with explicit topic names. Message types are optional
+# and default to sensor_msgs/msg/Image and gz.msgs.Image; they are shown
+# here for completeness.
 - ros_topic_name: "config_test_cam/image"
   gz_topic_name: "/config_test_cam/image"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
-  direction: GZ_TO_ROS
   frame_id: "config_test_cam_optical_frame"
+  camera_info:
+    gz_topic_name: "/config_test_cam/camera_info"
+    ros_topic_name: "config_test_cam/camera_info"
 
-# topic_name shorthand: same name on both sides.
+# topic_name shorthand without message types, and camera_info bridged on
+# the default topics derived from the image topic names.
 - topic_name: "/config_test_cam_min/image"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
+  camera_info:

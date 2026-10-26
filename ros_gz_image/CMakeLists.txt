@@ -22,6 +22,9 @@ find_package(gz-transport REQUIRED)
 find_package(gz_msgs_vendor REQUIRED)
 find_package(gz-msgs REQUIRED)
 
+find_package(yaml_cpp_vendor REQUIRED)
+find_package(yaml-cpp REQUIRED)
+
 include_directories(include)
 
 set(executable
@@ -30,6 +33,7 @@ set(executable
 
 add_executable(${executable}
   src/image_bridge.cpp
+  src/image_bridge_config.cpp
 )
 
 target_link_libraries(${executable}
@@ -37,6 +41,7 @@ target_link_libraries(${executable}
   image_transport::image_transport
   ros_gz_bridge::ros_gz_bridge
   rclcpp::rclcpp
+  yaml-cpp::yaml-cpp
   gz-msgs::core
   gz-transport::core
 )
@@ -79,6 +84,20 @@ if(BUILD_TESTING)
       gz-transport::core
     )
     add_dependencies(test_image_bridge_config ${executable})
+
+    ament_add_gtest(test_image_bridge_config_parser
+      test/test_image_bridge_config_parser.cpp
+      src/image_bridge_config.cpp
+      TIMEOUT 120
+    )
+    target_include_directories(test_image_bridge_config_parser PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+    target_link_libraries(test_image_bridge_config_parser
+      rclcpp::rclcpp
+      ros_gz_bridge::ros_gz_bridge
+      yaml-cpp::yaml-cpp
+    )
   endif()
 
   # find_package(rostest REQUIRED)
